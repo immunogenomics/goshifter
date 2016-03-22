@@ -2,9 +2,9 @@
 """
 :File: functions.py
 :Author: Gosia Trynka <gosia@broadinstitute.org>
-:Last updated: 2014-07-23
+:Last updated: 2016-03-22
 
-Copyright (C) 2014  Gosia Trynka
+Copyright (C) 2014, 2015, 2016  Gosia Trynka
 
 This file is part of GoShifter package.
 
