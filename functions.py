@@ -126,7 +126,6 @@ def getLdInfoTabix(snpInfoChr,tabixDir,window,r2min):
     """
     Calls tabix to retrive SNPs within window around the queried SNP. 
     Finds all the SNPs in LD at a given r2.
-    Currently uses fixed tabix file name in a format chrI.EUR.ld.bgz.
     """
     ldInfo = {}
     allSnps = 0
@@ -170,10 +169,10 @@ def snpLdTabix(snp,chrom,bp,tabixDir,window,r2min,ldInfo):
     infile = 0
     for line in proc.stdout:
         fields = line.rstrip().split()
-        snp1 = fields[2]
         bp1 = int(fields[1])
-        snp2 = fields[4]
+        snp1 = fields[2]
         bp2 = int(fields[3])
+        snp2 = fields[4]
         r2 = float(fields[5])
         if snp1 == snp and r2 >= r2min:
             ldInfo[snp].setdefault(snp2,{})
