@@ -85,9 +85,10 @@ def invalid_arg(args, arg):
 
 def validate_args(args):
 
-    if not (args['--proxymap'] is None) and not os.path.exists(args['--proxymap']):
-        invalid_arg(args, '--proxymap')
-    elif not (args['--snpmap'] is None) and not os.path.exists(args['--snpmap']):
+    # if not (args['--proxymap'] is None) and not os.path.exists(args['--proxymap']):
+    #     invalid_arg(args, '--proxymap')
+    # el
+    if not (args['--snpmap'] is None) and not os.path.exists(args['--snpmap']):
         invalid_arg(args, '--snpmap')
 
 
