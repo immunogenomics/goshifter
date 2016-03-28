@@ -11,14 +11,13 @@ Given a list of SNP positions, file with annotations and directory with SNP LD f
 
 
 Usage:
-    ./goshifter.py [--snpmap FILE --proxymap FILE] --annotation FILE --permute INT --ld DIR --out FILE [--rsquared NUM --window NUM --min-shift NUM --max-shift NUM --ld-extend NUM --no-ld]
+    ./goshifter.py --snpmap FILE --annotation FILE --permute INT --ld DIR --out FILE [--rsquared NUM --window NUM --min-shift NUM --max-shift NUM --ld-extend NUM --no-ld]
 
 Options:
     -h, --help              Print this message and exit.
     -v, --version           Print the version and exit.
 
     -s, --snpmap FILE       File with SNP mappings, tab delimited, must include header: SNP, CHR, BP. Chromosomes in format chrN.
-    -y, --proxymap FILE     File with proxy mappings (should include all proxies).
     -a, --annotation FILE   File with annotations, bed format. No header.
     -p, --permute INT       Number of permutations.
     -l, --ld DIR            Directory with LD files
@@ -84,13 +83,8 @@ def invalid_arg(args, arg):
 
 
 def validate_args(args):
-
-    # if not (args['--proxymap'] is None) and not os.path.exists(args['--proxymap']):
-    #     invalid_arg(args, '--proxymap')
-    # el
-    if not (args['--snpmap'] is None) and not os.path.exists(args['--snpmap']):
+    if not os.path.exists(args['--snpmap']):
         invalid_arg(args, '--snpmap')
-
 
     if not os.path.exists(args['--annotation']):
         invalid_arg(args, '--annotation')
@@ -155,15 +149,11 @@ if __name__ == '__main__':
     for arg in args:
         print "\t", arg, args[arg]
     print "\n"
-    
     args = validate_args(args)
 
 
     ### read pheno mappings
-    if not (args['--snpmap'] is None): 
-         snpInfoChr = data.readSnpMapByChr(args['--snpmap'])
-    elif not (args['--proxymap'] is None):
-         snpInfoChr = data.readProxyMap(args['--proxymap'])
+    snpInfoChr = data.readSnpMapByChr(args['--snpmap'])
 
     #### find median annotation size to expand LD boundries
     if args['--ld-extend'] == "False":
