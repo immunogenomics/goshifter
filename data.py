@@ -53,7 +53,7 @@ def readSnpMapByChr(file,maf=None):
     print "Filtering SNPs if MAF < {}".format(maf)
     snpMap = {}
     i = 0
-    with open(file,'r') as f:
+    with open(file,'rU') as f:
         snpNu = 0
         header = next(f).rstrip().split("\t")
         chr_i = getCol('Chrom',header,file)
@@ -82,6 +82,45 @@ def readSnpMapByChr(file,maf=None):
             snpNu += 1
     print 'Read {snpNu} SNPs from {file}'.format(**locals())
     return snpMap
+    
+def readProxyMap(file,maf=None):
+    """
+    Reads in file with SNP mappings.
+    Returns dict, key:chrom, value:snp, bp.
+    """
+    maf = maf if maf is not None else 0
+    print "Filtering SNPs if MAF < {}".format(maf)
+    snpMap = {}
+    i = 0
+    with open(file,'rU') as f:
+        snpNu = 0
+        header = next(f).rstrip().split("\t")
+        chr_i = getCol('Chrom',header,file)
+        snp_i = getCol('SNP',header,file)
+        bp_i = getCol('BP',header,file)
+        #check for freq in the header only if maf is specified
+        if maf != 0:
+            freq_i = getCol('Freq',header,file)
+		
+        for line in f:
+            i += 1
+            line = line.rstrip().split("\t")
+            checkMappingsFormat(file,line,i)
+            chr = line[chr_i]
+            snp = line[snp_i]
+            if snp == 'excluded': continue
+            bp = int(line[bp_i])
+            if maf != 0:
+                freq = float(line[freq_i])
+                if freq > 0.5:
+                    freq = 1-freq
+                if freq < maf: continue
+            snpMap.setdefault(chr,{})
+            snpMap[chr].setdefault(snp,{})
+            snpMap[chr][snp]['bp'] = bp
+            snpNu += 1
+    print 'Read {snpNu} SNPs from {file}'.format(**locals())
+    return snpMap    
 
 
 def getCol(name,line,file):
