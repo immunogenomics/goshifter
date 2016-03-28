@@ -64,7 +64,7 @@ def features(fin,sep=None):
 
     sep = sep if sep is not None else "\t" #defaults to tab delimited
     all = []
-    for line in gzip.open(fin, 'rU'):
+    for line in gzip.open(fin, 'r'):
         chrom, start, end = line.rstrip().split(sep)[:3]
         if chrom == "Chrom": continue
         all.append(int(end)-int(start))
@@ -81,7 +81,7 @@ def intervalTree(fin):
     """
     i = 0 
     tree = ChromTree()
-    for line in gzip.open(fin, 'rU'):
+    for line in gzip.open(fin, 'r'):
         i+= 1
         chrom, start, end = line.rstrip().split("\t")[:3]
         if chrom == "Chrom": continue
@@ -528,7 +528,7 @@ def mergeTree(fin1):
 
 def iterFileTree(fin,trees):
     n=0 
-    for line in gzip.open(fin, 'rU'):
+    for line in gzip.open(fin, 'r'):
         n+=1
         chrom, beg, end = line.rstrip().split("\t")[:3]
         if chrom == "Chrom": continue
