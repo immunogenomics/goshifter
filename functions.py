@@ -124,7 +124,7 @@ def mapToLdInfo(snpInfoChr):
 
 def getLdInfoTabix(snpInfoChr,tabixDir,window,r2min):
     """
-    Calls tabix to retrive SNPs within window around the queried SNP. 
+    Calls tabix to retrieve SNPs within window around the queried SNP. 
     Finds all the SNPs in LD at a given r2.
     """
     ldInfo = {}
@@ -151,7 +151,7 @@ def getLdInfoTabix(snpInfoChr,tabixDir,window,r2min):
 
 def snpLdTabix(snp,chrom,bp,tabixDir,window,r2min,ldInfo):
     """
-    Retrive LD info from the tabix file for a single SNP.
+    Retrieve LD info from the tabix file for a single SNP.
     """
     file = os.path.join(tabixDir,'{}.EUR.tsv.gz')
     tabixFile = file.format(chrom)
