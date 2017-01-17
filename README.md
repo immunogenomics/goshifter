@@ -4,11 +4,9 @@ GoShifter is a method to determine enrichment of annotations in GWAS significant
 
 Please note this code depends on bx-python: https://bitbucket.org/james_taylor/bx-python/wiki/HowToInstall
 Also, this program requires tabix (http://www.htslib.org/doc/tabix.html) to be in the $PATH.
-Furthermore, this program requires LD files that can be obtained here: https://data.broadinstitute.org/srlab/BEAGLE/1kG-beagle-release3/pairwise_ld/r2_ge_0.8/
 
-If for any reason the LD files are not available anymore, use the following structure (tab-separated):
-chromosome1 pos1 rs1 pos2 rs2 r-squared dprime
+This program depends on pre-calculated LD files. Each pair of variants should be on a single line, values should be tab-separated, and the files should be indexed with Tabix. 
 
-for example:
+Format (chrA\tposA\trsIdA\trsIdB\tRsquared\tDPrime), e.g.:
 chr7	143099133	rs10808026	143103481	rs56402156	0.970556	0.992515
 
