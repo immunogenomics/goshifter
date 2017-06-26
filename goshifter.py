@@ -2,7 +2,7 @@
 """
 :File: goshifter.py
 :Author: Gosia Trynka <gosia@broadinstitute.org>
-:Last updated: 2014-07-23
+:Last updated: 2017-07-26
 
 Given a list of SNP positions, file with annotations and directory with SNP LD files:
     - Compute the enrichment of provided set of SNPs within specified annotations
@@ -11,7 +11,7 @@ Given a list of SNP positions, file with annotations and directory with SNP LD f
 
 
 Usage:
-    ./goshifter.py --snpmap FILE --annotation FILE --permute INT --ld DIR --out FILE [--rsquared NUM --window NUM --min-shift NUM --max-shift NUM --ld-extend NUM --no-ld]
+    ./goshifter.py --snpmap FILE --annotation FILE --permute INT [--ld DIR --proxies FILE] --out FILE [--rsquared NUM --window NUM --min-shift NUM --max-shift NUM --ld-extend NUM --no-ld]
 
 Options:
     -h, --help              Print this message and exit.
@@ -20,6 +20,7 @@ Options:
     -s, --snpmap FILE       File with SNP mappings, tab delimited, must include header: SNP, CHR, BP. Chromosomes in format chrN.
     -a, --annotation FILE   File with annotations, bed format. No header.
     -p, --permute INT       Number of permutations.
+    -i, --proxies FILE      File with proxy information for snps in --snpmap; takes precedence over --ld
     -l, --ld DIR            Directory with LD files
     
     -r, --rsquared NUM      Include LD SNPs at rsquared >= NUM [default: 0.8]
@@ -32,7 +33,7 @@ Options:
     -o, --out FILE          Write output file.
 
 
-Copyright (C) 2014  Gosia Trynka
+Copyright (C) 2014-2017  Gosia Trynka, Harm-Jan Westra
 
 This file is part of GoShifter package.
 
@@ -95,6 +96,9 @@ def validate_args(args):
         invalid_arg(args, '--permute')
 
     
+    if not os.path.exists(args['--proxies']):
+        invalid_arg(args, '--ld')
+
     #if args['--ld'] != 'False':
     if not os.path.exists(args['--ld']):
         invalid_arg(args, '--ld')
@@ -176,7 +180,7 @@ if __name__ == '__main__':
         args['--permute'],
         args['--out'],
         args['--no-ld'],
-        args['--flatld'])
+        args['--proxies'])
 
     print "\n******* Analysis ended", datetime\
             .now().strftime("%A, %d. %B %Y %I:%M%p"), "*******\n"

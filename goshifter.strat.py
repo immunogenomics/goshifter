@@ -19,9 +19,9 @@ Options:
 
     -s, --snpmap FILE           File with SNP mappings, tab delimited, must include header: SNP, CHR, BP. Chromosomes in format chrN.
     -a, --annotation-a FILE     File with primary annotations, bed format. Gzipped. No header.
-    -b, --annotation-b FILE     File with annotation to stratify on, bed
-    format. Gzipped. No header.
+    -b, --annotation-b FILE     File with annotation to stratify on, bed format. Gzipped. No header.
     -p, --permute INT           Number of permutations.
+    -i, --proxies FILE          File with proxy information for snps in --snpmap; takes precedence over --ld
     -l, --ld DIR                Directory with LD files
     
     -r, --rsquared NUM          Include LD SNPs at rsquared >= NUM [default: 0.8]
@@ -34,7 +34,7 @@ Options:
     -o, --out FILE              Output file.
 
 
-Copyright (C) 2014  Gosia Trynka
+Copyright (C) 2014-2017  Gosia Trynka, Harm-Jan Westra
 
 This file is part of GoShifter package.
 
@@ -99,6 +99,8 @@ def validate_args(args):
     except ValueError:
         invalid_arg(args, '--permute')
 
+    if not os.path.exists(args['--proxies']):
+        invalid_arg(args, '--proxies')
     
     #if args['--ld'] != 'False':
     if not os.path.exists(args['--ld']):
@@ -111,7 +113,6 @@ def validate_args(args):
 
     if args['--rsquared'] <= 0 or args['--rsquared'] > 1:
         invalid_arg(args, '--rsquared')
-    
 
     try:
         args['--window'] = float(args['--window'])
@@ -177,10 +178,16 @@ if __name__ == '__main__':
     b_tree = functions.merge2IntervalTree(b_mergePeaks)
 
     ### test for enrichment with peak shifting (random shift)
-    functions.enrich_shift_conditional_tabixLd(snpInfoChr,args['--ld'],\
-            args['--rsquared'],args['--window'],expand,a_tree,b_tree,\
-            args['--min-shift'],args['--max-shift'],args['--permute'],\
-            args['--out'],args['--no-ld'])
+    functions.enrich_shift_conditional_tabixLd(snpInfoChr,args['--ld'],
+            args['--rsquared'],
+            args['--window'],
+            expand,a_tree,b_tree,
+            args['--min-shift'],
+            args['--max-shift'],
+            args['--permute'],
+            args['--out'],
+            args['--no-ld'],
+            args['--proxies'])
 
     print "\n******* Analysis ended", datetime\
             .now().strftime("%A, %d. %B %Y %I:%M%p"), "*******\n"

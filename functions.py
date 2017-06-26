@@ -2,9 +2,9 @@
 """
 :File: functions.py
 :Author: Gosia Trynka <gosia@broadinstitute.org>
-:Last updated: 2016-03-22
+:Last updated: 2017-06-26
 
-Copyright (C) 2014, 2015, 2016  Gosia Trynka
+Copyright (C) 2014, 2015, 2016, 2017  Gosia Trynka, Harm-Jan Westra
 
 This file is part of GoShifter package.
 
@@ -611,7 +611,7 @@ def merge2IntervalTree(mergeTree):
     return convTree
 
 
-def enrich_shift_conditional_tabixLd(snpInfoChr,tabixDir,r2min,window,expand,a_tree,b_tree,minShift,maxShift,nPerm,fOut,nold):
+def enrich_shift_conditional_tabixLd(snpInfoChr,tabixDir,r2min,window,expand,a_tree,b_tree,minShift,maxShift,nPerm,fOut,nold,flatld):
     """
     Calculates the enrichment of annotation a stratifing on annotation b by random 
     peak shift, peaks flip around if shift falls outside LD boundrie 
@@ -619,7 +619,10 @@ def enrich_shift_conditional_tabixLd(snpInfoChr,tabixDir,r2min,window,expand,a_t
     if nold:
         ldInfo = mapToLdInfo(snpInfoChr)
     else:
-        ldInfo = getLdInfoTabix(snpInfoChr,tabixDir,window,r2min)
+        if flatld:
+            ldInfo = getLdInfoProxyFinderFile(snpInfoChr,flatld,window,r2min)
+        else:
+            ldInfo = getLdInfoTabix(snpInfoChr,tabixDir,window,r2min)
     
     snpPeakInfo = shift_conditional(snpInfoChr,a_tree,b_tree,ldInfo,expand,minShift,maxShift,nPerm) 
     overlapStratPerm(snpPeakInfo,snpInfoChr,fOut,nPerm,ldInfo)
