@@ -90,16 +90,19 @@ def intervalTree(fin):
     return tree
 
 
-def enrichPermRandBoundryPeakShift_tabixLd(snpInfoChr,tabixDir,r2min,window,expand,peaksTree,minShift,maxShift,nPerm,fOut,nold):
+def enrichPermRandBoundryPeakShift_tabixLd(snpInfoChr,tabixDir,r2min,window,expand,peaksTree,minShift,maxShift,nPerm,fOut,nold,flatld):
     """
-    Calculates the enrichement using random peak shifting, 
+    Calculates the enrichment using random peak shifting, 
     peaks flip around if after shift they fall outside LD boundries
     """
     
     if nold:
         ldInfo = mapToLdInfo(snpInfoChr)
-    else:
-        ldInfo = getLdInfoTabix(snpInfoChr,tabixDir,window,r2min)
+    else 
+        if flatld:
+            ldInfo = getLdInfoProxyFinderFile(snpInfoChr,flatld,window,r2min)
+        else:
+            ldInfo = getLdInfoTabix(snpInfoChr,tabixDir,window,r2min)
     
     snpPeakInfo, ldsnpPeakInfo = permRandBoundryPeakShift(snpInfoChr,peaksTree,ldInfo,expand,minShift,maxShift,nPerm)
     overlapPerm(snpPeakInfo,ldsnpPeakInfo,snpInfoChr,fOut,nPerm,ldInfo)
@@ -148,6 +151,69 @@ def getLdInfoTabix(snpInfoChr,tabixDir,window,r2min):
             .format(allSnps,all_ld_snps)
     return ldInfo
 
+def getLdInfoProxyFinderFile(snpInfoChr,tabixDir,window,r2min):
+    """
+    If all proxies have been precalculated with proxyfinder
+    Use this flat file for loading all proxies (no tabix indexing required)
+    """
+
+    ldInfo = {}
+    allSnps = 0
+
+    for chrom in snpInfoChr:
+        allSnps += len(snpInfoChr[chrom])
+    
+    i=0
+
+    # make a SNP list
+    snpList = ()
+    for chrom in snpInfoChr:
+        for snp in snpInfoChr[chrom]:
+            snpList.append(snp)
+
+            # add snp as proxy to itself as default
+            ldInfo[snp].setdefault(snp,{})
+            ldInfo[snp][snp]['bp2'] = bp
+            ldInfo[snp][snp]['r2'] = 1
+
+    # open flat proxy file
+    proxyFile = open(tabixDir)
+    for line in proxyFile:
+        # ChromA	PosA	RsIdA	ChromB	PosB	RsIdB	Distance	RSquared	Dprime
+        fields = line.rstrip().split()
+        bp1 = int(fields[1])
+        snp1 = fields[2]
+        bp2 = int(fields[4])
+        snp2 = fields[5]
+        r2 = float(fields[6])
+        
+        distance = abs(int(bp1-bp2))
+
+        if r2 >= r2min and distance <= window:
+            querySNP = None
+            snpProxy = None
+
+            if snp1 in snpList and snp2 in snpList:
+                print("Error building proxy list: both SNP 1 and SNP 2 are in your input set.. Are your SNPs independent? Try choosing a different r2 threshold..")
+                print("snp1: "+snp1+"\tsnp2: "+snp2+"\tr2: "+str(r2))
+                quit()
+            elif snp1 in snpList:
+                querySNP = snp1
+                snpProxy = snp2
+            elif snp2 in snpList:
+                querySNP = snp2
+                snpProxy = snp1
+            
+            ldInfo[querySNP].setdefault(snpProxy,{})
+            ldInfo[querySNP][snpProxy]['bp2'] = bp2
+            ldInfo[querySNP][snpProxy]['r2'] = r2
+    proxyFile.close()
+    all_ld_snps = len(ldInfo[snp].keys())
+    
+    print "Total number of LD SNPs across {} loci is {}"\
+            .format(allSnps,all_ld_snps)
+    return ldInfo    
+
 
 def snpLdTabix(snp,chrom,bp,tabixDir,window,r2min,ldInfo):
     """
@@ -157,10 +223,10 @@ def snpLdTabix(snp,chrom,bp,tabixDir,window,r2min,ldInfo):
     tabixFile = file.format(chrom)
     
     ldInfo.setdefault(snp,{})
-    st = bp - window
+    st = int(bp - window)
     if st < 0:
         st = 0
-    en = bp + window
+    en = (bp + window)
     
     query = "tabix {tabixFile} {chrom}:{st}-{en} | awk '$6 >= {r2min} {{print $0}}' | grep -w {snp}".format(**locals())
     proc = Popen(query,shell=True,stdout=PIPE)

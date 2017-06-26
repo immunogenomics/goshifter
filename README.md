@@ -7,6 +7,6 @@ Also, this program requires tabix (http://www.htslib.org/doc/tabix.html) to be i
 
 This program depends on pre-calculated LD files. Each pair of variants should be on a single line, values should be tab-separated, and the files should be indexed with Tabix. 
 
-Format (chrA\tposA\trsIdA\trsIdB\tRsquared\tDPrime), e.g.:
+Format (chrA\tposA\trsIdA\tposB\trsIdB\tRsquared\tDPrime), e.g.:
 chr7	143099133	rs10808026	143103481	rs56402156	0.970556	0.992515
 

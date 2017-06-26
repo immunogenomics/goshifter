@@ -165,7 +165,18 @@ if __name__ == '__main__':
     peaksTree = functions.intervalTree(args['--annotation'])
 
     ### test for enrichment with peak shifting (random shift)
-    functions.enrichPermRandBoundryPeakShift_tabixLd(snpInfoChr,args['--ld'],args['--rsquared'],args['--window'],expand,peaksTree,args['--min-shift'],args['--max-shift'],args['--permute'],args['--out'],args['--no-ld'])
+    functions.enrichPermRandBoundryPeakShift_tabixLd(snpInfoChr,
+        args['--ld'],
+        args['--rsquared'],
+        args['--window'],
+        expand,
+        peaksTree,
+        args['--min-shift'],
+        args['--max-shift'],
+        args['--permute'],
+        args['--out'],
+        args['--no-ld'],
+        args['--flatld'])
 
     print "\n******* Analysis ended", datetime\
             .now().strftime("%A, %d. %B %Y %I:%M%p"), "*******\n"
