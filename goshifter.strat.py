@@ -99,12 +99,16 @@ def validate_args(args):
     except ValueError:
         invalid_arg(args, '--permute')
 
-    if not os.path.exists(args['--proxies']):
-        invalid_arg(args, '--proxies')
-    
+    if args['--proxies'] != "False":
+        if not os.path.exists(args['--proxies']):
+            invalid_arg(args, '--proxies')
+    elif args['--ld'] != "False":
     #if args['--ld'] != 'False':
-    if not os.path.exists(args['--ld']):
-        invalid_arg(args, '--ld')
+        if not os.path.exists(args['--ld']):
+            invalid_arg(args, '--ld')
+    else:
+        sys.exit('ERROR: specify --ld or --proxies to continue')
+
 
     try:
         args['--rsquared'] = float(args['--rsquared'])
