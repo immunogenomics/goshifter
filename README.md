@@ -139,8 +139,7 @@ rs2943559 N/A N/A
 rs11552449 N/A N/A
 </pre>
 
-***.snpscore** – defines which LD SNPs are overlapping an annotation in the
-observed data
+***.snpscore** – defines which LD SNPs are overlapping an annotation in the observed data
 <pre>
 locus ld_snp overlap
 rs11780156 rs11780156 1
@@ -155,24 +154,28 @@ rs11780156 rs11997192 0
 </pre>
 
 ## **goshifter.strat.py**
+
 ### Input files:
+
 snpmap – see above
 annotation-a – mappings of the primary annotation which will be tested for enrichment with the SNP set. See above for format details for the annotation input file.
 annotation-b – mappings of the secondary annotation. Assessment of enrichment for annotation-a will be tested stratifying on this annotation-b. See above for format details for the annotation input file.
 
-###Usage:
+### Usage:
+
 ```./goshifter.strat.py --snpmap FILE --annotation-a FILE --annotation-b FILE --permute INT --ld DIR --out FILE [--rsquared NUM --window NUM --min-shift NUM --max-shift NUM --ld-extend NUM --no-ld]```
 
 If you make use of LD files precalculated by ProxyFinder, replace ```--ld 1kG-beaglerelease3/pairwise_ld/``` with ```--proxies /path/to/proxyfinderoutput.txt```
 
-###Options
+### Options
 Same options as goshifter.py, with the exception:
 <pre>
 -a, --annotation-a	FILE	File with primary annotations, bed format. Gzipped. No header.
 -b, --annotation-b	FILE	File with annotation to stratify on, bed format. Gzipped. No header.
 </pre>
 
-##Example usage
+## Example usage
+
 ```./goshifter.strat.py --snpmap test_data/bc.snpmappings.hg19.txt --annotation-a test_data/UCSFUBC. Breast_vHMEC.bed.gz --annotation-b test_data/UCSFUBC.Breast_Myoepithelial_Cells.bed.gz --permute 1000 --ld 1kG-beaglerelease3/pairwise_ld/ --out test_data/bc.H3K4me1_vHMEC_strat_Myoepithelial_Cells```
 
 This will output a message on the screen (and print the P-value corresponding to the significance of an overlap) and write results to *.enrich (see above for explanation of the format).
