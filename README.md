@@ -2,11 +2,6 @@
 
 GoShifter is a method to determine enrichment of annotations in GWAS significant loci. The manual can be found in the GoShifter_manual.pdf file. These files were taken from http://www.broadinstitute.org/mpg/goshifter/, and may have small updates and bugfixes.
 
-
-
-
-
-
 # Manual
 
 ## Requirements
@@ -107,7 +102,7 @@ Options:
 
 If you make use of LD files precalculated by ProxyFinder, replace ```--ld 1kG-beaglerelease3/pairwise_ld/``` with ```--proxies /path/to/proxyfinderoutput.txt```
 
-This will output the message on the screen (and print the P-value corresponding to the significance of an overlap). The following output files will be created: 
+GoShifter will output a message on the screen (and print the P-value corresponding to the significance of an overlap). The following output files will be created: 
 
 ***.enrich** – output file with observed and permuted overlap values
 <pre>
@@ -122,6 +117,7 @@ nperm nSnpOverlap allSnps enrichment
 7 25 68 0.36765
 8 17 68 0.25
 </pre>
+
 nperm = 0 is the observed overlap
 nSnpOverlap – number of loci where at least one SNP overlaps an annotation
 allSnps – total number of tested loci
@@ -142,6 +138,7 @@ rs3757318 N/A N/A
 rs2943559 N/A N/A
 rs11552449 N/A N/A
 </pre>
+
 ***.snpscore** – defines which LD SNPs are overlapping an annotation in the
 observed data
 <pre>
@@ -158,7 +155,7 @@ rs11780156 rs11997192 0
 </pre>
 
 ## **goshifter.strat.py**
-###Input files:
+### Input files:
 snpmap – see above
 annotation-a – mappings of the primary annotation which will be tested for enrichment with the SNP set. See above for format details for the annotation input file.
 annotation-b – mappings of the secondary annotation. Assessment of enrichment for annotation-a will be tested stratifying on this annotation-b. See above for format details for the annotation input file.
@@ -176,6 +173,6 @@ Same options as goshifter.py, with the exception:
 </pre>
 
 ##Example usage
-```./goshifter_v2_wLicense/goshifter.strat.py --snpmap test_data/bc.snpmappings.hg19.txt --annotation-a test_data/UCSFUBC. Breast_vHMEC.bed.gz --annotation-b test_data/UCSFUBC.Breast_Myoepithelial_Cells.bed.gz --permute 1000 --ld 1kG-beaglerelease3/pairwise_ld/ --out test_data/bc.H3K4me1_vHMEC_strat_Myoepithelial_Cells```
+```./goshifter.strat.py --snpmap test_data/bc.snpmappings.hg19.txt --annotation-a test_data/UCSFUBC. Breast_vHMEC.bed.gz --annotation-b test_data/UCSFUBC.Breast_Myoepithelial_Cells.bed.gz --permute 1000 --ld 1kG-beaglerelease3/pairwise_ld/ --out test_data/bc.H3K4me1_vHMEC_strat_Myoepithelial_Cells```
 
-This will output the message on the screen (and print the P-value corresponding to the significance of an overlap) and write results to *.enrich (see above for explanation of the format).
+This will output a message on the screen (and print the P-value corresponding to the significance of an overlap) and write results to *.enrich (see above for explanation of the format).
