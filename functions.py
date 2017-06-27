@@ -98,7 +98,7 @@ def enrichPermRandBoundryPeakShift_tabixLd(snpInfoChr,tabixDir,r2min,window,expa
     
     if nold:
         ldInfo = mapToLdInfo(snpInfoChr)
-    else 
+    else:
         if flatld:
             ldInfo = getLdInfoProxyFinderFile(snpInfoChr,flatld,window,r2min)
         else:
@@ -137,7 +137,7 @@ def getLdInfoTabix(snpInfoChr,tabixDir,window,r2min):
         allSnps += len(snpInfoChr[chrom])
     
     i=0
-    all_ld_snps = 0
+    
     for chrom in snpInfoChr:
         for snp in snpInfoChr[chrom]:
             bp = snpInfoChr[chrom][snp]['bp']
@@ -145,10 +145,16 @@ def getLdInfoTabix(snpInfoChr,tabixDir,window,r2min):
             if not i % 100 or i == allSnps:
                 print 'Read LD info for {i} of {allSnps} SNPs'.format(**locals())
             snpLdTabix(snp,chrom,bp,tabixDir,window,r2min,ldInfo)
-            all_ld_snps += len(ldInfo[snp].keys())
+            
+    all_ld_snps = 0
+    nrSnpsWoProxies = 0
+    for snp in ldInfo:
+        if len(ldInfo[snp].keys()) == 1:
+            nrSnpsWoProxies += 1
+        all_ld_snps += len(ldInfo[snp].keys())
     
-    print "Total number of LD SNPs across {} loci is {}"\
-            .format(allSnps,all_ld_snps)
+    print "Total number of LD SNPs across {} loci is {}. Number of loci without LD SNPs {}."\
+            .format(allSnps,all_ld_snps, nrSnpsWoProxies)
     return ldInfo
 
 def getLdInfoProxyFinderFile(snpInfoChr,tabixDir,window,r2min):
@@ -166,52 +172,63 @@ def getLdInfoProxyFinderFile(snpInfoChr,tabixDir,window,r2min):
     i=0
 
     # make a SNP list
-    snpList = ()
+    snpList = list()
+    
+    # pprint(snpInfoChr)
     for chrom in snpInfoChr:
-        for snp in snpInfoChr[chrom]:
+        for snp in snpInfoChr[chrom]:        
             snpList.append(snp)
 
             # add snp as proxy to itself as default
+            ldInfo.setdefault(snp,{})
             ldInfo[snp].setdefault(snp,{})
-            ldInfo[snp][snp]['bp2'] = bp
+            ldInfo[snp][snp]['bp2'] = snpInfoChr[chrom][snp]
             ldInfo[snp][snp]['r2'] = 1
 
     # open flat proxy file
     proxyFile = open(tabixDir)
+    firstLine = True
     for line in proxyFile:
-        # ChromA	PosA	RsIdA	ChromB	PosB	RsIdB	Distance	RSquared	Dprime
-        fields = line.rstrip().split()
-        bp1 = int(fields[1])
-        snp1 = fields[2]
-        bp2 = int(fields[4])
-        snp2 = fields[5]
-        r2 = float(fields[6])
-        
-        distance = abs(int(bp1-bp2))
+        if firstLine:
+            # check whether the file has the proper format..
+            firstLine = False
+        else:
+            # ChromA	PosA	RsIdA	ChromB	PosB	RsIdB	Distance	RSquared	Dprime
+            fields = line.rstrip().split()
+            if len(fields) >= 7:
+                chr1 = fields[0]
+                chr2 = fields[3]
+                
+                if chr1 == chr2:
+                    bp1 = int(fields[1])
+                    snp1 = fields[2]
+                    bp2 = int(fields[4])
+                    snp2 = fields[5]
+                    r2 = float(fields[7])
+                    distance = abs(int(bp1-bp2))
 
-        if r2 >= r2min and distance <= window:
-            querySNP = None
-            snpProxy = None
-
-            if snp1 in snpList and snp2 in snpList:
-                print("Error building proxy list: both SNP 1 and SNP 2 are in your input set.. Are your SNPs independent? Try choosing a different r2 threshold..")
-                print("snp1: "+snp1+"\tsnp2: "+snp2+"\tr2: "+str(r2))
-                quit()
-            elif snp1 in snpList:
-                querySNP = snp1
-                snpProxy = snp2
-            elif snp2 in snpList:
-                querySNP = snp2
-                snpProxy = snp1
-            
-            ldInfo[querySNP].setdefault(snpProxy,{})
-            ldInfo[querySNP][snpProxy]['bp2'] = bp2
-            ldInfo[querySNP][snpProxy]['r2'] = r2
+                    if r2 >= r2min and distance <= window:
+                        if snp1 in snpList:
+                            ldInfo[snp1].setdefault(snp2,{})
+                            ldInfo[snp1][snp2]['bp2'] = bp2
+                            ldInfo[snp1][snp2]['r2'] = r2
+                        elif snp2 in snpList:
+                            ldInfo[snp2].setdefault(snp1,{})
+                            ldInfo[snp2][snp1]['bp2'] = bp1
+                            ldInfo[snp2][snp1]['r2'] = r2
+                        
+                        
     proxyFile.close()
-    all_ld_snps = len(ldInfo[snp].keys())
+
+    all_ld_snps = 0
+    nrSnpsWoProxies = 0
+    for snp in ldInfo:
+        if len(ldInfo[snp].keys()) == 1:
+            nrSnpsWoProxies += 1
+        all_ld_snps += len(ldInfo[snp].keys())
     
-    print "Total number of LD SNPs across {} loci is {}"\
-            .format(allSnps,all_ld_snps)
+    print "Total number of LD SNPs across {} loci is {}. Number of loci without LD SNPs {}."\
+            .format(allSnps,all_ld_snps, nrSnpsWoProxies)
     return ldInfo    
 
 
@@ -240,12 +257,13 @@ def snpLdTabix(snp,chrom,bp,tabixDir,window,r2min,ldInfo):
         bp2 = int(fields[3])
         snp2 = fields[4]
         r2 = float(fields[5])
-        if snp1 == snp and r2 >= r2min:
+        distance = abs(bp1-bp2)
+        if distance <= window and snp1 == snp and r2 >= r2min:
             ldInfo[snp].setdefault(snp2,{})
             ldInfo[snp][snp2]['bp2'] = bp2
             ldInfo[snp][snp2]['r2'] = r2
             infile = 1 
-        elif snp2 == snp and r2 >= r2min:
+        elif distance <= window and snp2 == snp and r2 >= r2min:
             ldInfo[snp].setdefault(snp1,{})
             ldInfo[snp][snp1]['bp2'] = bp1
             ldInfo[snp][snp1]['r2'] = r2

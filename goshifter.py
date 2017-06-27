@@ -74,6 +74,8 @@ import functions
 import sys
 import os
 
+
+
 def warn(message):
     sys.stderr.write(message)
     sys.stderr.flush()
@@ -95,11 +97,11 @@ def validate_args(args):
     except ValueError:
         invalid_arg(args, '--permute')
   
-    if args['--proxies'] != "False":
+    if args['--proxies'] is not None:
         if not os.path.exists(args['--proxies']):
             invalid_arg(args, '--proxies')
-    elif args['--ld'] != "False":
-    #if args['--ld'] != 'False':
+    elif args['--ld'] is not None:
+        #if args['--ld'] != 'False':
         if not os.path.exists(args['--ld']):
             invalid_arg(args, '--ld')
     else:
