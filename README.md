@@ -20,7 +20,7 @@ GoShifter is divided into two scripts:
 2. **goshifter.strat.py**, which tests for the significance of an overlap of a provided set of SNPs with annotation A stratifying on secondary, possibly colocalizing annotation B.
 
 ## **goshifter.py**
-###Input files
+### Input files
 
 **snpmap file** - with mappings for the tested set of SNPs, tab delimited, with columns SNP, Chrom, BP. Chromosome in the format ‘chrN’. Must include header. Example: ```cat GoShifter/test_data/bc.snpmappings.hg19.txt```
 <pre>
