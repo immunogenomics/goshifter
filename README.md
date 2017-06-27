@@ -65,7 +65,9 @@ Another option to specify LD is to generate an LD proxy file using a program suc
 
 Format of proxy LD files (chrA\tposA\trsIdA\tchrB\tposB\trsIdB\tDistance\tRsquared\tDPrime), e.g.:
 <pre>
-
+ChromA	PosA	RsIdA	ChromB	PosB	RsIdB	Distance	RSquared	Dprime
+Chr2	202149589	rs1045485	Chr2	202149589	rs1045485	0	0.9999999999999981	0.999999999999999
+Chr2	202149589	rs1045485	Chr2	202150914	rs35550815	1325	0.9999999999999981	0.999999999999999
 </pre>
 
 
