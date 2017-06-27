@@ -1,6 +1,8 @@
 # GoShifter
 
-GoShifter is a method to determine enrichment of annotations in GWAS significant loci. The manual can be found in the GoShifter_manual.pdf file. These files were taken from http://www.broadinstitute.org/mpg/goshifter/, and may have small updates and bugfixes.
+GoShifter is a method to determine enrichment of annotations in GWAS significant loci. The manual can be found in the GoShifter_manual.pdf file. These files were taken from http://www.broadinstitute.org/mpg/goshifter/, and may have small updates and bugfixes. 
+
+**update June 26th, 2017:** You can input LD files precalculated with ProxyFinder (see below).
 
 # Manual
 
@@ -50,14 +52,19 @@ chrY 1459641 1459841
 </pre>
 
 **ld files** 
-When testing for enrichment GoShifter uses LD information for the set of provided SNPs. To obtain this information please download precomputed pairwise SNP LD information from (these files are large!): [Location of LD files](https://www.broadinstitute.org/~slowikow/tgp/pairwise_ld/). These path to these files can be specified using the ```--ld``` command line switch (see below). In these files, each pair of variants should be on a single line, values should be tab-separated, and the files should be indexed with [Tabix](http://www.htslib.org/doc/tabix.html). Also, this program requires Tabix to be in the $PATH. These LD files are headerless.
+When testing for enrichment GoShifter uses LD information for the set of provided SNPs. There are now two options to input LD information:
+* precomputed LD files provided by us
+* LD files calculated using ProxyFinder
+
+**Precomputed LD files provided by us**
+To obtain this information please download precomputed pairwise SNP LD information from (these files are large!): [Location of LD files](https://www.broadinstitute.org/~slowikow/tgp/pairwise_ld/). These path to these files can be specified using the ```--ld``` command line switch (see below). In these files, each pair of variants should be on a single line, values should be tab-separated, and the files should be indexed with [Tabix](http://www.htslib.org/doc/tabix.html). Also, this program requires Tabix to be in the $PATH. These LD files are headerless.
 
 Format of LD files (chrA\tposA\trsIdA\tposB\trsIdB\tRsquared\tDPrime), e.g.:
 <pre>
 chr7	143099133	rs10808026	143103481	rs56402156	0.970556	0.992515
 </pre>
 
-**ld proxy files** 
+**ProxyFinder LD files**
 Another option to specify LD is to generate an LD proxy file using a program such as [ProxyFinder](https://github.com/immunogenomics/harmjan/releases). The path to this file can be specified using the ```--proxies``` command line switch (see below). The output of the ProxyFinder program is slightly different than the above LD files, but has as a benefit that it only includes LD information for the SNPs that are of your interest (so that GoShifter doesn't have to do the same tabix queries over and over again). Also, this allows you to generate LD files for other populations easily. To generate these files, please refer to the [ProxyFinder readme.md](https://github.com/immunogenomics/harmjan/tree/master/ProxyFinder).
 
 Format of proxy LD files (chrA\tposA\trsIdA\tchrB\tposB\trsIdB\tDistance\tRsquared\tDPrime), e.g.:
