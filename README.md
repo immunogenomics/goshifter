@@ -77,26 +77,33 @@ Goshifter can be run using a single command line:
 
 **Options:**
 <pre>
--h, --help					Print this message and exit.
--v, --version				Print the version and exit.
--s, --snpmap		FILE	File with SNP mappings, tab delimited, must include header: SNP, CHR, BP. Chromosomes in format chrN.
--a, --annotation	FILE	File with annotations, bed format. No header.
--p, --permute		INT		Number of permutations.
--l, --ld			DIR		Directory with LD files. LD files must of name:
-chrN.EUR.ld.bgz
--r, --rsquared		NUM		Include LD SNPs at r2 >= NUM [default: 0.8]
--w, --window		NUM 	Window size to find LD SNPs [default: 5e5]
--n, --min-shift		NUM 	Minimum shift [default: False]. Defaults to random shifts.
--x, --max-shift		NUM 	Maximum shift [default: False]. Defaults to random shifts.
--e, --ld-extend		NUM 	Fixed value by which to extend LD boundaries [default:
-False]. Default is to extend LD block 2*median size of annotation.
--n, --no-ld					Do not include SNPs in LD [default: False]. If this is
-specified the SNPs only index SNP will be tested for enrichment. Note that at the moment you still have to provide a path to directory with LD info. 
--o, --out			FILE	Write output file.
+Usage:
+    ./goshifter.py --snpmap FILE --annotation FILE --permute INT [--ld DIR --proxies FILE] --out FILE [--rsquared NUM --window NUM --min-shift NUM --max-shift NUM --ld-extend NUM --no-ld]
+
+Options:
+    -h, --help              Print this message and exit.
+    -v, --version           Print the version and exit.
+
+    -s, --snpmap FILE       File with SNP mappings, tab delimited, must include header: SNP, CHR, BP. Chromosomes in format chrN.
+    -a, --annotation FILE   File with annotations, bed format. No header.
+    -p, --permute INT       Number of permutations.
+    -i, --proxies FILE      File with proxy information for snps in --snpmap; takes precedence over --ld
+    -l, --ld DIR            Directory with LD files
+    
+    -r, --rsquared NUM      Include LD SNPs at rsquared >= NUM [default: 0.8]
+    -w, --window NUM        Window size to find LD SNPs [default: 5e5]
+    -n, --min-shift NUM     Minimum shift [default: False]
+    -x, --max-shift NUM     Maximum shift [default: False]
+    -e, --ld-extend NUM     Fixed value by which to extend LD boundries [default: False]
+    -n, --no-ld             Do not include SNPs in LD [default: False]
+
+    -o, --out FILE          Write output file.
 </pre>
 
 ### Example usage:
-```./goshifter.py --snpmap test_data/bc.snpmappings.hg19.txt --annotation test_data /UCSF-UBC.Breast_vHMEC.bed.gz --permute 1000 --ld 1kG-beaglerelease3/ pairwise_ld/ --out test_data/bc.H3K4me1_vHMEC3```
+```./goshifter.py --snpmap test_data/bc.snpmappings.hg19.txt --annotation test_data /UCSF-UBC.Breast_vHMEC.bed.gz --permute 1000 --ld 1kG-beaglerelease3/pairwise_ld/ --out test_data/bc.H3K4me1_vHMEC3```
+
+If you make use of LD files precalculated by ProxyFinder, replace ```--ld 1kG-beaglerelease3/pairwise_ld/``` with ```--proxies /path/to/proxyfinderoutput.txt```
 
 This will output the message on the screen (and print the P-value corresponding to the significance of an overlap). The following output files will be created: 
 
@@ -156,6 +163,8 @@ annotation-b – mappings of the secondary annotation. Assessment of enrichment 
 
 ###Usage:
 ```./goshifter.strat.py --snpmap FILE --annotation-a FILE --annotation-b FILE --permute INT --ld DIR --out FILE [--rsquared NUM --window NUM --min-shift NUM --max-shift NUM --ld-extend NUM --no-ld]```
+
+If you make use of LD files precalculated by ProxyFinder, replace ```--ld 1kG-beaglerelease3/pairwise_ld/``` with ```--proxies /path/to/proxyfinderoutput.txt```
 
 ###Options
 Same options as goshifter.py, with the exception:
