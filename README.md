@@ -14,8 +14,10 @@ GoShifter is written for **Python 2.7**. It uses the following modules:
 * bisect
 * subprocess
 * chromtree (provided)
-* [bx.intervals.cluster](https://bitbucket.org/james_taylor/bx-python/wiki/HowToInstall)
+* bx-python
 * numpy
+
+Numpy and bx-python can be installed using pip.
 
 ## Usage
 GoShifter is divided into two scripts: 
