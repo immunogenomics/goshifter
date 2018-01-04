@@ -326,7 +326,10 @@ def permRandBoundryPeakShift(snpInfoChr,peaksTree,ldInfo,expand,minShift,maxShif
 
                 continue
             
-            maxbp = bounds[chrom][snp]['maxbp'] + expand
+            if isinstance(bounds[chrom][snp]['maxbp'], dict):
+                maxbp = bounds[chrom][snp]['maxbp']['bp'] + expand
+            else:
+                maxbp = bounds[chrom][snp]['maxbp'] + expand
             minbp = bounds[chrom][snp]['minbp'] - expand
             
             if minShift == "False" or maxShift == "False":
@@ -353,7 +356,11 @@ def permRandBoundryPeakShift(snpInfoChr,peaksTree,ldInfo,expand,minShift,maxShif
 
                 # shift ldsnps
                 for ldsnp in ldInfo[snp]:
-                    ldbp = ldInfo[snp][ldsnp]['bp2'] + shiftVal
+                    
+                    if isinstance(ldInfo[snp][ldsnp]['bp2'] , dict):
+                        ldbp = ldInfo[snp][ldsnp]['bp2']['bp'] + shiftVal
+                    else:
+                        ldbp = ldInfo[snp][ldsnp]['bp2'] + shiftVal
                     
                     
                     # check if shifted snp maps outside ld boundries
@@ -417,7 +424,10 @@ def peaks2region(bounds,peaksTree,expand):
         for snp in bounds[chrom]:
             peaksToSnp.setdefault(snp,[])
             minbp = bounds[chrom][snp]['minbp'] - expand
-            maxbp = bounds[chrom][snp]['maxbp'] + expand
+            if isinstance(bounds[chrom][snp]['maxbp'], dict):
+                maxbp = bounds[chrom][snp]['maxbp']['bp'] + expand
+            else:
+                maxbp = bounds[chrom][snp]['maxbp'] + expand
             peaks = peaksTree.find(chrom,minbp,maxbp)
             for peak in peaks:
                 sta = peak[0]
